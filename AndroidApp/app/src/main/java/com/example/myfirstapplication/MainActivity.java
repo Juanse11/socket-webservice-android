@@ -215,8 +215,9 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_home) {
             broadcastManagerForSocketIO.sendBroadcast(SocketManagementService.CLIENT_TO_SERVER_MESSAGE,"test");
 
-        } else if (id == R.id.nav_gallery) {
-            createUser("asaad","asaad@uninorte.edu.co","12345");
+        } else if (id == R.id.nav_chat) {
+            Intent intent = new Intent(this,ChatActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_slideshow) {
             AsyncTask.execute(new Runnable() {
