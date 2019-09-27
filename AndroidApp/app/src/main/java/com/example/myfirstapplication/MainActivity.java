@@ -14,6 +14,7 @@ import com.example.myfirstapplication.broadcast.BroadcastManagerCallerInterface;
 import com.example.myfirstapplication.database.AppDatabase;
 import com.example.myfirstapplication.gps.GPSManager;
 import com.example.myfirstapplication.gps.GPSManagerCallerInterface;
+import com.example.myfirstapplication.model.Position;
 import com.example.myfirstapplication.model.User;
 import com.example.myfirstapplication.network.SocketManagementService;
 import com.example.myfirstapplication.network.WebServiceCallerInterface;
@@ -73,6 +74,8 @@ public class MainActivity extends AppCompatActivity
     BroadcastManager broadcastManagerForWebService;
     ArrayList<String> listOfMessages=new ArrayList<>();
     ArrayAdapter<String> adapter ;
+    ArrayList<User> connectedUsers;
+    ArrayList<Position> usersPositions;
     boolean serviceStarted=false;
     AppDatabase appDatabase;
 
@@ -197,12 +200,13 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void sendRequestWebService(String payload, String type){
+    public void sendRequestWebService(String payload, String type, String resource){
         Intent intent = new Intent(this, WebServiceManagementService.class);
         intent.setAction(WebServiceManagementService.GET_REQUEST);
         intent.putExtra("BASE_URL", "http://192.168.0.15:61103/WebServiceREST/resources/users");
-        intent.putExtra("METHOD_TYPE", "POST");
+        intent.putExtra("METHOD_TYPE", type);
         intent.putExtra("PAYLOAD", payload);
+        intent.putExtra("RESOURCE", resource);
         startService(intent);
     }
 
@@ -263,15 +267,15 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        JSONObject locationToJson = new JSONObject();
-        try {
-            locationToJson.put("latitude", ((int) location.getLatitude()));
-            locationToJson.put("longitude", ((int) location.getLongitude()));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        sendRequestWebService(locationToJson.toString(), "POST");
+//        JSONObject locationToJson = new JSONObject();
+//        try {
+//            locationToJson.put("latitude", ((int) location.getLatitude()));
+//            locationToJson.put("longitude", ((int) location.getLongitude()));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        sendRequestWebService(locationToJson.toString(), "POST", "positions");
 
         if(serviceStarted)
             if(broadcastManagerForSocketIO!=null){
@@ -369,13 +373,17 @@ public class MainActivity extends AppCompatActivity
         mapController.setCenter(startPoint);
     }
 
+    public void updatePositions(){
+
+    }
+
     @Override
     public void MessageReceivedThroughBroadcastManager(final String channel,final String type, final String message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (channel.equals(WebServiceManagementService.WEB_SERVICE_CHANNEL)){
-                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                    updatePositions();
                 }else{
                     listOfMessages.add(message);
                     ((ListView)findViewById(R.id.messages_list_view)).setAdapter(adapter);

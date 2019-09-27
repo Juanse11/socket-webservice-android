@@ -6,6 +6,8 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
 import com.example.myfirstapplication.MainActivity;
 import com.example.myfirstapplication.broadcast.BroadcastManager;
 import com.example.myfirstapplication.broadcast.BroadcastManagerCallerInterface;
@@ -55,15 +57,16 @@ public class WebServiceManagementService extends IntentService implements Broadc
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             final String action = intent.getAction();
-            if (GET_REQUEST.equals(action)){
+            if (GET_REQUEST.equals(action)) {
                 String BASE_URL = intent.getStringExtra("BASE_URL");
                 String PAYLOAD = intent.getStringExtra("PAYLOAD");
                 String METHOD_TYPE = intent.getStringExtra("METHOD_TYPE");
+                String RESOURCE = intent.getStringExtra("RESOURCE");
                 initializeBroadcastManager();
-                CallWebServiceOperation(this, BASE_URL, PAYLOAD, METHOD_TYPE);
+                CallWebServiceOperation(this, BASE_URL, PAYLOAD, METHOD_TYPE, RESOURCE);
             }
 
-       }
+        }
     }
 
     /**
@@ -100,42 +103,35 @@ public class WebServiceManagementService extends IntentService implements Broadc
     public static void CallWebServiceOperation(final WebServiceCallerInterface caller,
                                                final String webServiceURL,
                                                final String payload,
+                                               final String resource,
                                                final String methodType) {
 
         try {
-            URL url = new URL(webServiceURL);
+            URL url = new URL(webServiceURL + "/" + resource);
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-            if (methodType.equals("POST")){
+            httpURLConnection.setRequestMethod(methodType);
+            httpURLConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            httpURLConnection.setRequestProperty("Accept", "application/json");
+
+            if (methodType.equals("POST")) {
                 httpURLConnection.setDoOutput(true);
-                httpURLConnection.setRequestMethod(methodType);
-                httpURLConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                httpURLConnection.setRequestProperty("Accept", "application/json");
-                try(OutputStream os = httpURLConnection.getOutputStream()) {
+                try (OutputStream os = httpURLConnection.getOutputStream()) {
                     byte[] input = payload.getBytes("UTF-8");
                     os.write(input, 0, input.length);
                 }
-                int responseCode=httpURLConnection.getResponseCode();
-                if(responseCode==HttpURLConnection.HTTP_OK){
-                    InputStream in=httpURLConnection.getInputStream();
-                    StringBuffer stringBuffer=new StringBuffer();
-                    int charIn=0;
-                    while((charIn=in.read())!=-1){
-                        stringBuffer.append((char)charIn);
-                    }
-                    caller.WebServiceMessageReceived(payload,stringBuffer.toString());
-                }
-            }else{
-                int responseCode = httpURLConnection.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    InputStream in = httpURLConnection.getInputStream();
-                    StringBuffer stringBuffer = new StringBuffer();
-                    int charIn = 0;
-                    while ((charIn = in.read()) != -1) {
-                        stringBuffer.append((char) charIn);
-                    }
-                    caller.WebServiceMessageReceived(payload, stringBuffer.toString());
-                }
+
             }
+            int responseCode = httpURLConnection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                InputStream in = httpURLConnection.getInputStream();
+                StringBuffer stringBuffer = new StringBuffer();
+                int charIn = 0;
+                while ((charIn = in.read()) != -1) {
+                    stringBuffer.append((char) charIn);
+                }
+                caller.WebServiceMessageReceived(payload, stringBuffer.toString());
+            }
+
 
             httpURLConnection.disconnect();
 
@@ -207,4 +203,5 @@ public class WebServiceManagementService extends IntentService implements Broadc
         broadcastManager = null;
         super.onDestroy();
     }
+
 }
