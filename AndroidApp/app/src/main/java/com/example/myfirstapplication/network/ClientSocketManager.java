@@ -6,6 +6,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ClientSocketManager{
 
@@ -50,6 +52,7 @@ public class ClientSocketManager{
         try{
             if(initializeClientSocketManager()){
                 if(initializeStreams()){
+                    pingServerSocket();
                     String message="";
                     while((message=reader.readLine())!=null){
                         caller.MessageReceived(message);
@@ -59,6 +62,16 @@ public class ClientSocketManager{
         }catch (Exception error){
             caller.ErrorFromSocketManager(error);
         }
+    }
+
+    public void pingServerSocket(){
+        Timer myTimer = new Timer();
+        myTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                sendMessage("PING");
+            }
+        }, 5000, 5000);
     }
 
     public void sendMessage(final String message){
