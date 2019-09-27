@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -35,7 +36,6 @@ public class ChatActivity extends AppCompatActivity implements BroadcastManagerC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        String message = ((EditText)findViewById(R.id.editText)).getText().toString();
         ((Button)findViewById(R.id.service_button)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -49,6 +49,15 @@ public class ChatActivity extends AppCompatActivity implements BroadcastManagerC
         });
         initializeBroadcastManagerForSocketIO();
         adapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1,messagesList);
+        ((ImageButton)findViewById(R.id.buttonMessage)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final EditText ed = ((EditText)findViewById(R.id.message_editText));
+                String message = ((EditText)findViewById(R.id.message_editText)).getText().toString();
+                broadcastManagerForSocketIO.sendBroadcast(SocketManagementService.CLIENT_TO_SERVER_MESSAGE,message);
+                ed.getText().clear();
+            }
+        });
     }
 
     @Override
