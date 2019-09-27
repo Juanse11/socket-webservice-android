@@ -1,0 +1,14 @@
+com\mycompany\webservicerest\resources\PersistenceUnitHelper.class
+com\mycompany\webservicerest\resources\TCPServiceManagerCallerInterface.class
+com\mycompany\webservicerest\resources\StartupConfig.class
+com\server\objects\Position_.class
+com\mycompany\webservicerest\resources\JavaEE8Resource.class
+com\server\objects\User.class
+com\server\objects\Position.class
+com\mycompany\webservicerest\PositionResource.class
+com\mycompany\webservicerest\UserResource.class
+com\mycompany\webservicerest\ServerResource.class
+com\server\objects\User_.class
+com\mycompany\webservicerest\resources\ClientSocket.class
+com\server\objects\ServerQuery.class
+com\mycompany\webservicerest\JAXRSConfiguration.class

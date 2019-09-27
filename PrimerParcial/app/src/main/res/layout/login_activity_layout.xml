@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@android:color/white"
+    >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/main_title"
+        android:textSize="34dp"
+        android:fontFamily="@font/futura_medium"
+        android:layout_margin="20dp"
+        android:textAlignment="center"
+        android:textColor="@color/uninorteRed"
+        />
+
+    <EditText
+        android:id="@+id/login_user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="User name"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="@font/futura_medium"
+        android:textColor="@color/uninorteRed"
+        />
+
+    <EditText
+        android:id="@+id/login_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginBottom="20dp"
+        android:inputType="numberPassword"
+        android:fontFamily="@font/futura_medium"
+        android:textColor="@color/uninorteRed"
+        />
+
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Accept"
+        android:layout_margin="40dp"
+        android:fontFamily="@font/futura_medium"
+        android:background="@color/uninorteRed"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        />
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/headerlogo_un"
+        android:layout_margin="20dp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/web_site"
+        android:textSize="20dp"
+        android:fontFamily="@font/futura_medium"
+        android:layout_margin="10dp"
+        android:textAlignment="center"
+        android:textColor="@color/uninorteRed"
+        />
+
+
+
+
+</LinearLayout>
