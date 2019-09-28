@@ -23,6 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -65,45 +66,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, GPSManagerCallerInterface , BroadcastManagerCallerInterface, WebServiceCallerInterface {
+        implements NavigationView.OnNavigationItemSelectedListener, GPSManagerCallerInterface, BroadcastManagerCallerInterface, WebServiceCallerInterface {
 
     GPSManager gpsManager;
     private MapView map;
     private MyLocationNewOverlay mLocationOverlay;
     BroadcastManager broadcastManagerForSocketIO;
     BroadcastManager broadcastManagerForWebService;
-    ArrayList<String> listOfMessages=new ArrayList<>();
-    ArrayAdapter<String> adapter ;
-    ArrayList<User> connectedUsers;
+    ArrayList<String> listOfMessages = new ArrayList<>();
+    ArrayAdapter<String> adapter;
+    ArrayList<String> connectedUsers = new ArrayList<>();
     ArrayList<Position> usersPositions;
-    boolean serviceStarted=false;
+    boolean serviceStarted = false;
     AppDatabase appDatabase;
 
 
-    public void initializeDataBase(){
-        try{
-            appDatabase= Room.
-                    databaseBuilder(this,AppDatabase.class,
+    public void initializeDataBase() {
+        try {
+            appDatabase = Room.
+                    databaseBuilder(this, AppDatabase.class,
                             "app-database").
                     fallbackToDestructiveMigration().build();
-        }catch (Exception error){
-            Toast.makeText(this,error.getMessage(),Toast.LENGTH_LONG).show();
+        } catch (Exception error) {
+            Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-    public void initializeGPSManager(){
-        gpsManager=new GPSManager(this,this);
+
+    public void initializeGPSManager() {
+        gpsManager = new GPSManager(this, this);
         gpsManager.initializeLocationManager();
     }
 
-    public void initializeBroadcastManagerForSocketIO(){
-        broadcastManagerForSocketIO=new BroadcastManager(this,
+    public void initializeBroadcastManagerForSocketIO() {
+        broadcastManagerForSocketIO = new BroadcastManager(this,
                 SocketManagementService.
-                        SOCKET_SERVICE_CHANNEL,this);
+                        SOCKET_SERVICE_CHANNEL, this);
     }
 
-    public void initializeBroadcastManagerForWebService(){
-        broadcastManagerForWebService=new BroadcastManager(this,
-                WebServiceManagementService.WEB_SERVICE_CHANNEL,this);
+    public void initializeBroadcastManagerForWebService() {
+        broadcastManagerForWebService = new BroadcastManager(this,
+                WebServiceManagementService.WEB_SERVICE_CHANNEL, this);
     }
 
     @Override
@@ -121,22 +123,22 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        String user=getIntent().getExtras().
+        String user = getIntent().getExtras().
                 getString("user_name");
         Toast.makeText(
                 this,
-                "Welcome "+user,Toast.LENGTH_SHORT).
+                "Welcome " + user, Toast.LENGTH_SHORT).
                 show();
-        ((Button)findViewById(R.id.start_service_button)).setOnClickListener(new View.OnClickListener() {
+        ((Button) findViewById(R.id.start_service_button)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(
-                        getApplicationContext(),SocketManagementService.class);
-                intent.putExtra("SERVER_HOST",((EditText)findViewById(R.id.server_ip_txt)).getText()+"");
-                intent.putExtra("SERVER_PORT",Integer.parseInt(((EditText)findViewById(R.id.server_port_txt)).getText()+""));
+                Intent intent = new Intent(
+                        getApplicationContext(), SocketManagementService.class);
+                intent.putExtra("SERVER_HOST", ((EditText) findViewById(R.id.server_ip_txt)).getText() + "");
+                intent.putExtra("SERVER_PORT", Integer.parseInt(((EditText) findViewById(R.id.server_port_txt)).getText() + ""));
                 intent.setAction(SocketManagementService.ACTION_CONNECT);
                 startService(intent);
-                serviceStarted=true;
+                serviceStarted = true;
 
             }
         });
@@ -148,11 +150,11 @@ public class MainActivity extends AppCompatActivity
         adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, listOfMessages);
     }
 
-    public void createUser(String userName, String userEmail,String userPassword){
-        final User user=new User();
-        user.userName=userName;
-        user.userEmail=userEmail;
-        user.password=userPassword;
+    public void createUser(String userName, String userEmail, String userPassword) {
+        final User user = new User();
+        user.userName = userName;
+        user.userEmail = userEmail;
+        user.password = userPassword;
         try {
             AsyncTask.execute(new Runnable() {
                 @Override
@@ -161,11 +163,10 @@ public class MainActivity extends AppCompatActivity
                 }
             });
 
-        }catch (Exception error){
-            Toast.makeText(this,error.getMessage(),Toast.LENGTH_LONG).show();
+        } catch (Exception error) {
+            Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-
 
 
     @Override
@@ -200,7 +201,7 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void sendRequestWebService(String payload, String type, String resource){
+    public void sendRequestWebService(String payload, String type, String resource) {
         Intent intent = new Intent(this, WebServiceManagementService.class);
         intent.setAction(WebServiceManagementService.GET_REQUEST);
         intent.putExtra("BASE_URL", "http://192.168.0.15:61103/WebServiceREST/resources/users");
@@ -217,17 +218,17 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            broadcastManagerForSocketIO.sendBroadcast(SocketManagementService.CLIENT_TO_SERVER_MESSAGE,"test");
+            broadcastManagerForSocketIO.sendBroadcast(SocketManagementService.CLIENT_TO_SERVER_MESSAGE, "test");
 
         } else if (id == R.id.nav_chat) {
-            Intent intent = new Intent(this,ChatActivity.class);
+            Intent intent = new Intent(this, ChatActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_slideshow) {
             AsyncTask.execute(new Runnable() {
                 @Override
                 public void run() {
-                    int amount=appDatabase.UserDao().getAll().size();
+                    int amount = appDatabase.UserDao().getAll().size();
                 }
             });
 
@@ -259,10 +260,10 @@ public class MainActivity extends AppCompatActivity
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((TextView)findViewById(R.id.latitude_text_view)).setText(location.getLatitude()+"");
-                ((TextView)findViewById(R.id.longitude_text_view)).setText(location.getLongitude()+"");
-                if(map!=null)
-                setMapCenter(location);
+                ((TextView) findViewById(R.id.latitude_text_view)).setText(location.getLatitude() + "");
+                ((TextView) findViewById(R.id.longitude_text_view)).setText(location.getLongitude() + "");
+                if (map != null)
+                    setMapCenter(location);
 
             }
         });
@@ -277,11 +278,11 @@ public class MainActivity extends AppCompatActivity
 //
 //        sendRequestWebService(locationToJson.toString(), "POST", "positions");
 
-        if(serviceStarted)
-            if(broadcastManagerForSocketIO!=null){
+        if (serviceStarted)
+            if (broadcastManagerForSocketIO != null) {
                 broadcastManagerForSocketIO.sendBroadcast(
                         SocketManagementService.CLIENT_TO_SERVER_MESSAGE,
-                        location.getLatitude()+" / "+location.getLongitude());
+                        location.getLatitude() + " / " + location.getLongitude());
             }
     }
 
@@ -290,7 +291,7 @@ public class MainActivity extends AppCompatActivity
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                AlertDialog.Builder builder=
+                AlertDialog.Builder builder =
                         new AlertDialog.
                                 Builder(getApplicationContext());
                 builder.setTitle("GPS Error")
@@ -309,16 +310,16 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode==1001){
-            if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
+        if (requestCode == 1001) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this,
-                        "Thanks!!",Toast.LENGTH_SHORT).show();
+                        "Thanks!!", Toast.LENGTH_SHORT).show();
                 gpsManager.startGPSRequesting();
             }
 
         }
-        if(requestCode==1002){
-            if(grantResults[0]==PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == 1002) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 initializeOSM();
             }
         }
@@ -335,14 +336,14 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    public void initializeOSM(){
-        try{
-            if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    !=PackageManager.PERMISSION_GRANTED){
+    public void initializeOSM() {
+        try {
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,
                         new String[]{
-                        Manifest.permission.
-                                WRITE_EXTERNAL_STORAGE},1002);
+                                Manifest.permission.
+                                        WRITE_EXTERNAL_STORAGE}, 1002);
 
                 return;
             }
@@ -355,16 +356,16 @@ public class MainActivity extends AppCompatActivity
             this.mLocationOverlay =
                     new MyLocationNewOverlay(
                             new GpsMyLocationProvider(
-                                    this),map);
+                                    this), map);
             this.mLocationOverlay.enableMyLocation();
             map.getOverlays().add(this.mLocationOverlay);
-        }catch (Exception error){
-            Toast.makeText(this,error.getMessage(),Toast.LENGTH_SHORT).show();
+        } catch (Exception error) {
+            Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show();
 
         }
     }
 
-    public void setMapCenter(Location location){
+    public void setMapCenter(Location location) {
         IMapController mapController =
                 map.getController();
         mapController.setZoom(9.5);
@@ -373,22 +374,33 @@ public class MainActivity extends AppCompatActivity
         mapController.setCenter(startPoint);
     }
 
-    public void updatePositions(){
+    public void updatePositions() {
 
     }
 
     @Override
-    public void MessageReceivedThroughBroadcastManager(final String channel,final String type, final String message) {
+    public void MessageReceivedThroughBroadcastManager(final String channel, final String type, final String JsonMessage) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (channel.equals(WebServiceManagementService.WEB_SERVICE_CHANNEL)){
-                    updatePositions();
-                }else{
-                    listOfMessages.add(message);
-                    ((ListView)findViewById(R.id.messages_list_view)).setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
+                try {
+                    JSONObject message = new JSONObject(JsonMessage);
+                    if (channel.equals(WebServiceManagementService.WEB_SERVICE_CHANNEL)) {
+                        updatePositions();
+                    } else {
+                        if (type.equals(SocketManagementService.USER_CONNECTED)) {
+                            connectedUsers.add(message.get("id").toString());
+                            Log.d("MainActivity", connectedUsers.toString());
+                        } else if (type.equals(SocketManagementService.USER_DISCONNECTED)) {
+                            connectedUsers.remove(message.get("id").toString());
+                            Log.d("MainActivity", connectedUsers.toString());
+                        }
+
+                    }
+                } catch (Exception e) {
+
                 }
+
             }
         });
 
@@ -401,7 +413,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        if(broadcastManagerForSocketIO!=null){
+        if (broadcastManagerForSocketIO != null) {
             broadcastManagerForSocketIO.unRegister();
         }
         super.onDestroy();

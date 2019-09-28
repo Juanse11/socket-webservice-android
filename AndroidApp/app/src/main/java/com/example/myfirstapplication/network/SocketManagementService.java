@@ -3,11 +3,15 @@ package com.example.myfirstapplication.network;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.myfirstapplication.MainActivity;
 import com.example.myfirstapplication.broadcast.BroadcastManager;
 import com.example.myfirstapplication.broadcast.BroadcastManagerCallerInterface;
+import com.google.gson.Gson;
+
+import org.json.JSONObject;
 
 import java.net.Socket;
 
@@ -27,6 +31,9 @@ public class SocketManagementService extends IntentService implements ClientSock
     public static String SOCKET_SERVICE_CHANNEL="com.example.myfirstapplication.SOCKET_SERVICE_CHANNEL";
     public static String SERVER_TO_CLIENT_MESSAGE="SERVER_TO_CLIENT_MESSAGE";
     public static String CLIENT_TO_SERVER_MESSAGE="CLIENT_TO_SERVER_MESSAGE";
+    public static String USER_CONNECTED="USER_CONNECTED";
+    public static String USER_DISCONNECTED="USER_DISCONNECTED";
+    public static String MESSAGE_SENT="MESSAGE_SENT";
 
 
 
@@ -114,7 +121,16 @@ public class SocketManagementService extends IntentService implements ClientSock
         try {
 
             if(broadcastManager!=null){
-                broadcastManager.sendBroadcast( SERVER_TO_CLIENT_MESSAGE,message);
+                JSONObject messageJSON = new JSONObject(message);
+                Log.d("SocketManagementService", messageJSON.get("message").toString());
+                if (messageJSON.get("action").toString().equals(USER_CONNECTED)){
+                    broadcastManager.sendBroadcast( USER_CONNECTED, message);
+                }else if (messageJSON.get("action").toString().equals(USER_DISCONNECTED)){
+                    broadcastManager.sendBroadcast( USER_DISCONNECTED, message);
+                }else if (messageJSON.get("action").toString().equals(MESSAGE_SENT)){
+                    broadcastManager.sendBroadcast( MESSAGE_SENT, message);
+                }
+
             }
         }catch (Exception error){
 

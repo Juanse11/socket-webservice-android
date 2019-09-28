@@ -65,7 +65,7 @@ public class ChatActivity extends AppCompatActivity implements BroadcastManagerC
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(type.equals(SocketManagementService.SERVER_TO_CLIENT_MESSAGE.equals(type))){
+                if(type.equals(SocketManagementService.MESSAGE_SENT)){
                     messagesList.add(message);
                     ((ListView)findViewById(R.id.messages_view)).setAdapter(adapter);
                     adapter.notifyDataSetChanged();
