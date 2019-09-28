@@ -13,11 +13,11 @@ public class NetworkStateBroadcastManager extends BroadcastReceiver {
 
     private Context context;
     private String channel;
-    private BroadcastManagerCallerInterface caller;
+    private NetworkStateBroadcastManagerCallerInterface caller;
 
     public NetworkStateBroadcastManager(Context context,
                                         String channel,
-                                        BroadcastManagerCallerInterface caller) {
+                                        NetworkStateBroadcastManagerCallerInterface caller) {
         this.context = context;
         this.channel = channel;
         this.caller = caller;
@@ -51,9 +51,9 @@ public class NetworkStateBroadcastManager extends BroadcastReceiver {
         final NetworkInfo activeNetwork = connMgr.getActiveNetworkInfo();
         if(activeNetwork != null && activeNetwork.isConnected())
         {
-            Toast.makeText(context, "Online", Toast.LENGTH_SHORT).show();
+            caller.onNetworkStatusChange("STATUS", "ONLINE");
         }else{
-            Toast.makeText(context, "Offline", Toast.LENGTH_SHORT).show();
+            caller.onNetworkStatusChange("STATUS", "OFFLINE");
         }
 
 

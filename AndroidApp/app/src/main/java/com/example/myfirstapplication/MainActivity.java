@@ -12,16 +12,14 @@ import android.os.Bundle;
 import com.example.myfirstapplication.broadcast.BroadcastManager;
 import com.example.myfirstapplication.broadcast.BroadcastManagerCallerInterface;
 import com.example.myfirstapplication.broadcast.NetworkStateBroadcastManager;
+import com.example.myfirstapplication.broadcast.NetworkStateBroadcastManagerCallerInterface;
 import com.example.myfirstapplication.database.AppDatabase;
 import com.example.myfirstapplication.gps.GPSManager;
 import com.example.myfirstapplication.gps.GPSManagerCallerInterface;
 import com.example.myfirstapplication.model.Position;
 import com.example.myfirstapplication.model.User;
 import com.example.myfirstapplication.network.SocketManagementService;
-import com.example.myfirstapplication.network.WebServiceCallerInterface;
 import com.example.myfirstapplication.network.WebServiceManagementService;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -37,7 +35,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.view.MenuItem;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.gson.Gson;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -49,11 +46,9 @@ import android.view.Menu;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -64,10 +59,9 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, GPSManagerCallerInterface, BroadcastManagerCallerInterface, WebServiceCallerInterface {
+        implements NavigationView.OnNavigationItemSelectedListener, GPSManagerCallerInterface, BroadcastManagerCallerInterface, NetworkStateBroadcastManagerCallerInterface {
 
     GPSManager gpsManager;
     private MapView map;
@@ -154,7 +148,7 @@ public class MainActivity extends AppCompatActivity
         initializeOSM();
         initializeBroadcastManagerForWebService();
         initializeBroadcastManagerForSocketIO();
-        initializeBroadcastManagerForWebService();
+        initializeBroadcastManagerForNetworkState();
         adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, listOfMessages);
     }
 
@@ -183,7 +177,22 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    MainActivity.super.onBackPressed();
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+            builder.setTitle("Logout");
+            builder.setMessage("Do you wish to exit the app?");
+            builder.setIcon(R.drawable.ic_menu_camera);
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
     }
 
@@ -339,10 +348,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    @Override
-    public void WebServiceMessageReceived(String userState, String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
 
     public void initializeOSM() {
         try {
@@ -411,6 +416,11 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+    }
+
+    @Override
+    public void onNetworkStatusChange(String type, String message) {
 
     }
 

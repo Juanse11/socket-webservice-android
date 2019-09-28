@@ -28,10 +28,9 @@ import javax.net.ssl.SSLSocket;
  * TODO: Customize class - update intent actions, extra parameters and static
  * helper methods.
  */
-public class WebServiceManagementService extends IntentService implements BroadcastManagerCallerInterface, WebServiceCallerInterface {
+public class WebServiceManagementService extends IntentService implements BroadcastManagerCallerInterface {
 
-    WebServiceCallerInterface webServiceCallerInterface;
-    BroadcastManager broadcastManager;
+    public static BroadcastManager broadcastManager;
     public static String WEB_SERVICE_CHANNEL = "com.example.myfirstapplication.WEB_SERVICE_CHANNEL";
     public static String WEB_SERVICE_RESPONSE = "WEB_SERVICE_RESPONSE";
     public static String CLIENT_TO_SERVER_MESSAGE = "CLIENT_TO_SERVER_MESSAGE";
@@ -63,7 +62,7 @@ public class WebServiceManagementService extends IntentService implements Broadc
                 String METHOD_TYPE = intent.getStringExtra("METHOD_TYPE");
                 String RESOURCE = intent.getStringExtra("RESOURCE");
                 initializeBroadcastManager();
-                CallWebServiceOperation(this, BASE_URL, PAYLOAD, METHOD_TYPE, RESOURCE);
+                CallWebServiceOperation(BASE_URL, PAYLOAD, METHOD_TYPE, RESOURCE);
             }
 
         }
@@ -100,11 +99,11 @@ public class WebServiceManagementService extends IntentService implements Broadc
 //        }
 //    }
 
-    public static void CallWebServiceOperation(final WebServiceCallerInterface caller,
-                                               final String webServiceURL,
-                                               final String payload,
-                                               final String resource,
-                                               final String methodType) {
+    public static void CallWebServiceOperation(
+            final String webServiceURL,
+            final String payload,
+            final String resource,
+            final String methodType) {
 
         try {
             URL url = new URL(webServiceURL + "/" + resource);
@@ -129,7 +128,7 @@ public class WebServiceManagementService extends IntentService implements Broadc
                 while ((charIn = in.read()) != -1) {
                     stringBuffer.append((char) charIn);
                 }
-                caller.WebServiceMessageReceived(payload, stringBuffer.toString());
+                broadcastManager.sendBroadcast(WEB_SERVICE_RESPONSE, stringBuffer.toString());
             }
 
 
@@ -185,10 +184,6 @@ public class WebServiceManagementService extends IntentService implements Broadc
 
     }
 
-    @Override
-    public void WebServiceMessageReceived(String userState, String message) {
-        broadcastManager.sendBroadcast(WEB_SERVICE_RESPONSE, message);
-    }
 
     @Override
     public void ErrorAtBroadcastManager(Exception error) {
