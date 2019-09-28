@@ -11,6 +11,7 @@ import android.os.Bundle;
 
 import com.example.myfirstapplication.broadcast.BroadcastManager;
 import com.example.myfirstapplication.broadcast.BroadcastManagerCallerInterface;
+import com.example.myfirstapplication.broadcast.NetworkStateBroadcastManager;
 import com.example.myfirstapplication.database.AppDatabase;
 import com.example.myfirstapplication.gps.GPSManager;
 import com.example.myfirstapplication.gps.GPSManagerCallerInterface;
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity
     private MyLocationNewOverlay mLocationOverlay;
     BroadcastManager broadcastManagerForSocketIO;
     BroadcastManager broadcastManagerForWebService;
+    NetworkStateBroadcastManager networkStateBroadcastManager;
     ArrayList<String> listOfMessages = new ArrayList<>();
     ArrayAdapter<String> adapter;
     ArrayList<String> connectedUsers = new ArrayList<>();
@@ -106,6 +108,11 @@ public class MainActivity extends AppCompatActivity
     public void initializeBroadcastManagerForWebService() {
         broadcastManagerForWebService = new BroadcastManager(this,
                 WebServiceManagementService.WEB_SERVICE_CHANNEL, this);
+    }
+
+    public void initializeBroadcastManagerForNetworkState() {
+        networkStateBroadcastManager = new NetworkStateBroadcastManager(this, "NETWORK_STATE", this);
+
     }
 
     @Override
@@ -147,6 +154,7 @@ public class MainActivity extends AppCompatActivity
         initializeOSM();
         initializeBroadcastManagerForWebService();
         initializeBroadcastManagerForSocketIO();
+        initializeBroadcastManagerForWebService();
         adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, listOfMessages);
     }
 
