@@ -52,6 +52,7 @@ public class ClientSocketManager{
         try{
             if(initializeClientSocketManager()){
                 if(initializeStreams()){
+                    sendMessage("userID:15");
                     pingServerSocket();
                     String message="";
                     while((message=reader.readLine())!=null){

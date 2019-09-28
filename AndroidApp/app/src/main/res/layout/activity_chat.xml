@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:clipToPadding="false"
     android:focusableInTouchMode="true"
-    tools:context=".MainActivity">
+    tools:context=".ChatActivity">
 
     <EditText
         android:id="@+id/host_editText"
