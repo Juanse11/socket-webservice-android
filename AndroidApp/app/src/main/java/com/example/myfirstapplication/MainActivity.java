@@ -9,11 +9,13 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import com.example.myfirstapplication.adapter.UsersListAdapter;
 import com.example.myfirstapplication.broadcast.BroadcastManager;
 import com.example.myfirstapplication.broadcast.BroadcastManagerCallerInterface;
 import com.example.myfirstapplication.broadcast.NetworkStateBroadcastManager;
 import com.example.myfirstapplication.broadcast.NetworkStateBroadcastManagerCallerInterface;
 import com.example.myfirstapplication.database.AppDatabase;
+import com.example.myfirstapplication.dialog.LogoutDialogAlert;
 import com.example.myfirstapplication.gps.GPSManager;
 import com.example.myfirstapplication.gps.GPSManagerCallerInterface;
 import com.example.myfirstapplication.model.Position;
@@ -35,6 +37,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.view.MenuItem;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -46,6 +50,8 @@ import android.view.Menu;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +65,7 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, GPSManagerCallerInterface, BroadcastManagerCallerInterface, NetworkStateBroadcastManagerCallerInterface {
@@ -70,8 +77,8 @@ public class MainActivity extends AppCompatActivity
     BroadcastManager broadcastManagerForWebService;
     NetworkStateBroadcastManager networkStateBroadcastManager;
     ArrayList<String> listOfMessages = new ArrayList<>();
-    ArrayAdapter<String> adapter;
-    ArrayList<String> connectedUsers = new ArrayList<>();
+    UsersListAdapter adapter;
+    ArrayList<User> allUsers = new ArrayList<>();
     ArrayList<Position> usersPositions;
     boolean serviceStarted = false;
     AppDatabase appDatabase;
@@ -149,13 +156,17 @@ public class MainActivity extends AppCompatActivity
         initializeBroadcastManagerForWebService();
         initializeBroadcastManagerForSocketIO();
         initializeBroadcastManagerForNetworkState();
-        adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, listOfMessages);
+        sendRequestWebService("", "GET", "users");
+
+        adapter = new UsersListAdapter(this, allUsers);
+        ListView listView = (ListView) findViewById(R.id.messages_list_view);
+        listView.setAdapter(adapter);
     }
 
     public void createUser(String userName, String userEmail, String userPassword) {
         final User user = new User();
-        user.userName = userName;
-        user.userEmail = userEmail;
+        user.username = userName;
+        user.email = userEmail;
         user.password = userPassword;
         try {
             AsyncTask.execute(new Runnable() {
@@ -177,22 +188,8 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setPositiveButton("Logout", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    MainActivity.super.onBackPressed();
-                }
-            });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
-                }
-            });
-            builder.setTitle("Logout");
-            builder.setMessage("Do you wish to exit the app?");
-            builder.setIcon(R.drawable.ic_menu_camera);
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            LogoutDialogAlert dialog = new LogoutDialogAlert(this);
+            dialog.show(getSupportFragmentManager(), "dialog");
         }
     }
 
@@ -221,7 +218,7 @@ public class MainActivity extends AppCompatActivity
     public void sendRequestWebService(String payload, String type, String resource) {
         Intent intent = new Intent(this, WebServiceManagementService.class);
         intent.setAction(WebServiceManagementService.GET_REQUEST);
-        intent.putExtra("BASE_URL", "http://192.168.0.15:61103/WebServiceREST/resources/users");
+        intent.putExtra("BASE_URL", "http://192.168.0.15:61103/WebServiceREST/resources");
         intent.putExtra("METHOD_TYPE", type);
         intent.putExtra("PAYLOAD", payload);
         intent.putExtra("RESOURCE", resource);
@@ -249,13 +246,9 @@ public class MainActivity extends AppCompatActivity
                 }
             });
 
-
-        } else if (id == R.id.nav_tools) {
-
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_logout) {
+            LogoutDialogAlert dialog = new LogoutDialogAlert(this);
+            dialog.show(getSupportFragmentManager(), "dialog");
 
         }
 
@@ -397,18 +390,32 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run() {
                 try {
-                    JSONObject message = new JSONObject(JsonMessage);
-                    if (channel.equals(WebServiceManagementService.WEB_SERVICE_CHANNEL)) {
-                        updatePositions();
-                    } else {
-                        if (type.equals(SocketManagementService.USER_CONNECTED)) {
-                            connectedUsers.add(message.get("id").toString());
-                            Log.d("MainActivity", connectedUsers.toString());
-                        } else if (type.equals(SocketManagementService.USER_DISCONNECTED)) {
-                            connectedUsers.remove(message.get("id").toString());
-                            Log.d("MainActivity", connectedUsers.toString());
-                        }
 
+                    if (channel.equals(WebServiceManagementService.WEB_SERVICE_CHANNEL)) {
+                        if (type.equals(WebServiceManagementService.GET_USERS)){
+                            Gson g = new Gson();
+                            TypeToken<List<User>> token = new TypeToken<List<User>>() {};
+                            List<User> users = g.fromJson(JsonMessage, token.getType());
+                            allUsers.addAll(users);
+                            adapter.notifyDataSetChanged();
+                        }
+                    } else {
+                        JSONObject message = new JSONObject(JsonMessage);
+                        if (type.equals(SocketManagementService.USER_CONNECTED)) {
+                            if (!findUserByID(message.getInt("id"), "Online")){
+                                User u = new User();
+                                u.Id = message.getInt("id");
+                                u.status = "Online";
+                                allUsers.add(u);
+                            }
+                            ((ListView)findViewById(R.id.messages_list_view)).setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                        } else if (type.equals(SocketManagementService.USER_DISCONNECTED)) {
+                            Log.d("MainActivity","user disconnected");
+                            findUserByID(message.getInt("id"), "Offline");
+                            ((ListView)findViewById(R.id.messages_list_view)).setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                        }
                     }
                 } catch (Exception e) {
 
@@ -419,9 +426,29 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    public boolean findUserByID(int id, String status){
+        for (int i = 0; i < allUsers.size();i++){
+            User u = allUsers.get(i);
+            if (u.Id == id){
+                u.status = status;
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void onNetworkStatusChange(String type, String message) {
+        TextView mStatusTextView = (TextView) findViewById(R.id.status_text_view);
+        ImageView mStatusImageView = (ImageView) findViewById(R.id.status_image_view);
+        if (message.equals("ONLINE")) {
+            mStatusTextView.setText("Online");
+            mStatusImageView.setImageResource(R.drawable.ic_green_dot);
+        }else{
+            mStatusTextView.setText("Offline");
+            mStatusImageView.setImageResource(R.drawable.ic_red_dot);
 
+        }
     }
 
     @Override
@@ -430,10 +457,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onPause() {
         if (broadcastManagerForSocketIO != null) {
             broadcastManagerForSocketIO.unRegister();
         }
-        super.onDestroy();
+        if (broadcastManagerForWebService != null) {
+            broadcastManagerForWebService.unRegister();
+        }
+        if (networkStateBroadcastManager != null) {
+            networkStateBroadcastManager.unRegister();
+        }
+        super.onPause();
     }
 }

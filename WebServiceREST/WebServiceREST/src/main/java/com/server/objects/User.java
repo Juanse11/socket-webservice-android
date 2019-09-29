@@ -26,9 +26,42 @@ public class User implements Serializable {
             initialValue = 1, allocationSize = 1)
     @Column(name = "id")
     private Long Id;
-    private String firstName;
-    private String lastName;
-    private Long phone;
+    private String username;
+    private String email;
+    private String password;
+    private String status;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public Long getId() {
         return Id;
@@ -38,27 +71,5 @@ public class User implements Serializable {
         this.Id = Id;
     }
 
-    public String getFirstname() {
-        return firstName;
-    }
-
-    public void setFirstname(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastname() {
-        return lastName;
-    }
-
-    public void setLastname(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Long getPhone() {
-        return phone;
-    }
-
-    public void setPhone(Long phone) {
-        this.phone = phone;
-    }
+   
 }

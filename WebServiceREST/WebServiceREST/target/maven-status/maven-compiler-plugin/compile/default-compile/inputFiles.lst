@@ -1,12 +1,13 @@
 E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\mycompany\webservicerest\resources\PersistenceUnitHelper.java
 E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\mycompany\webservicerest\resources\StartupConfig.java
 E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\mycompany\webservicerest\resources\TCPServiceManagerCallerInterface.java
-E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\mycompany\webservicerest\resources\ClientSocket.java
 E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\mycompany\webservicerest\UserResource.java
 E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\server\objects\Position.java
 E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\mycompany\webservicerest\PositionResource.java
 E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\mycompany\webservicerest\resources\JavaEE8Resource.java
-E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\server\objects\ServerQuery.java
+E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\mycompany\webservicerest\resources\WebListener.java
 E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\mycompany\webservicerest\JAXRSConfiguration.java
-E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\server\objects\User.java
 E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\mycompany\webservicerest\ServerResource.java
+E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\mycompany\webservicerest\resources\ClientSocket.java
+E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\server\objects\ServerQuery.java
+E:\Documents\Universidad\VIII Semestre\Programacion Movil\PrimerParcial\WebServiceREST\WebServiceREST\src\main\java\com\server\objects\User.java

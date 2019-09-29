@@ -69,25 +69,25 @@ public class ServerResource {
 
     }
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response createUser(String user) {
-        Gson gson = new Gson();
-        System.out.println(gson.fromJson(user, User.class));
-        User userob = (User) gson.fromJson(user, User.class);
-        User newUser = new User();
-        newUser.setFirstname("ronaldo");
-        newUser.setLastname("lol");
-        em = PersistenceUnitHelper.PERSISTENCE_UNIT_2.createEntityManager();
-        em.getTransaction().begin();
-        em.persist(newUser);
-        em.flush();
-        em.getTransaction().commit();
-        em.close();
-
-        return Response.ok(user).build();
-    }
+//    @POST
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public Response createUser(String user) {
+//        Gson gson = new Gson();
+//        System.out.println(gson.fromJson(user, User.class));
+//        User userob = (User) gson.fromJson(user, User.class);
+//        User newUser = new User();
+//        newUser.setFirstname("ronaldo");
+//        newUser.setLastname("lol");
+//        em = PersistenceUnitHelper.PERSISTENCE_UNIT_2.createEntityManager();
+//        em.getTransaction().begin();
+//        em.persist(newUser);
+//        em.flush();
+//        em.getTransaction().commit();
+//        em.close();
+//
+//        return Response.ok(user).build();
+//    }
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)

@@ -1,5 +1,3 @@
-
-  
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -31,24 +29,26 @@ import javax.ws.rs.core.MediaType;
 @Singleton
 @Startup
 public class StartupConfig implements TCPServiceManagerCallerInterface {
+
     public static ClientSocket clientSocket;
-    
+
     @PostConstruct
     public void onStartup() {
         try {
-            clientSocket = new ClientSocket("10.20.38.27",9090,this);
+            clientSocket = new ClientSocket("192.168.0.15", 9090, this);
             clientSocket.initializeSocket();
             clientSocket.initializeStreams();
+            clientSocket.SendMessage("userID:-1");
         } catch (Exception e) {
             System.err.println(
-                "Initializing web service error: " + e.getMessage()
+                    "Initializing web service error: " + e.getMessage()
             );
         }
     }
-    
+
     private void initializeClientSocket() throws FileNotFoundException, IOException {
-        
-    }   
+
+    }
 
     @Override
     public void MessageReceiveFromClient(Socket clientSocket, byte[] data) {
@@ -59,6 +59,5 @@ public class StartupConfig implements TCPServiceManagerCallerInterface {
     public void ErrorHasBeenThrown(Exception error) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-   
+
 }

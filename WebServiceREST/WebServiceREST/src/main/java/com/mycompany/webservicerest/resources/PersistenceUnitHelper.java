@@ -32,4 +32,8 @@ public enum PersistenceUnitHelper {
     public EntityManager createEntityManager() {
         return emf.createEntityManager();
     }
+    
+    public void closeFactory(){
+        emf.close();
+    }
 }

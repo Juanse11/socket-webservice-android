@@ -15,13 +15,13 @@ public interface UserDao {
     @Query("select * from User")
     List<User> getAll();
 
-    @Query("select * from User  WHERE user_id IN (:userIds)")
-    List<User> loadAllByIds(int[] userIds);
+    @Query("select * from User  WHERE Id IN (:Ids)")
+    List<User> loadAllByIds(int[] Ids);
 
-    @Query("select * from User  WHERE email = :userEmail")
-    List<User> getUserbyEmail(String userEmail);
+    @Query("select * from User  WHERE email = :emails")
+    List<User> getUserbyEmail(String emails);
 
-    @Query("select * from User  WHERE user_name = :userName")
+    @Query("select * from User  WHERE username = :userName")
     List<User> getUserbyUserName(String userName);
 
     @Insert

@@ -32,7 +32,7 @@ public class WebServiceManagementService extends IntentService implements Broadc
 
     public static BroadcastManager broadcastManager;
     public static String WEB_SERVICE_CHANNEL = "com.example.myfirstapplication.WEB_SERVICE_CHANNEL";
-    public static String WEB_SERVICE_RESPONSE = "WEB_SERVICE_RESPONSE";
+    public static String GET_USERS = "GET_USERS";
     public static String CLIENT_TO_SERVER_MESSAGE = "CLIENT_TO_SERVER_MESSAGE";
 
 
@@ -62,7 +62,7 @@ public class WebServiceManagementService extends IntentService implements Broadc
                 String METHOD_TYPE = intent.getStringExtra("METHOD_TYPE");
                 String RESOURCE = intent.getStringExtra("RESOURCE");
                 initializeBroadcastManager();
-                CallWebServiceOperation(BASE_URL, PAYLOAD, METHOD_TYPE, RESOURCE);
+                CallWebServiceOperation(BASE_URL, PAYLOAD,  RESOURCE, METHOD_TYPE);
             }
 
         }
@@ -128,7 +128,7 @@ public class WebServiceManagementService extends IntentService implements Broadc
                 while ((charIn = in.read()) != -1) {
                     stringBuffer.append((char) charIn);
                 }
-                broadcastManager.sendBroadcast(WEB_SERVICE_RESPONSE, stringBuffer.toString());
+                broadcastManager.sendBroadcast(GET_USERS, stringBuffer.toString());
             }
 
 

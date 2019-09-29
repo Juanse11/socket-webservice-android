@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.util.Log;
 import android.widget.Toast;
 
 public class NetworkStateBroadcastManager extends BroadcastReceiver {
@@ -24,21 +25,19 @@ public class NetworkStateBroadcastManager extends BroadcastReceiver {
         initializeBroadcast();
     }
 
-    public void initializeBroadcast(){
-        try{
-            IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-            intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-            context.registerReceiver(this,intentFilter);
-        }catch (Exception error){
+    public void initializeBroadcast() {
+        try {
+            IntentFilter intentFilter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+            context.registerReceiver(this, intentFilter);
+        } catch (Exception error) {
             caller.ErrorAtBroadcastManager(error);
         }
     }
 
-    public void unRegister(){
-        try{
+    public void unRegister() {
+        try {
             context.unregisterReceiver(this);
-        }catch (Exception error){
+        } catch (Exception error) {
             caller.ErrorAtBroadcastManager(error);
         }
     }
@@ -49,10 +48,11 @@ public class NetworkStateBroadcastManager extends BroadcastReceiver {
         final ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         final NetworkInfo activeNetwork = connMgr.getActiveNetworkInfo();
-        if(activeNetwork != null && activeNetwork.isConnected())
-        {
+        if (activeNetwork != null && activeNetwork.isConnected()) {
+            Log.d("NetworkBroadcast", "ONLINE");
             caller.onNetworkStatusChange("STATUS", "ONLINE");
-        }else{
+        } else {
+            Log.d("NetworkBroadcast", "OFFLINE");
             caller.onNetworkStatusChange("STATUS", "OFFLINE");
         }
 

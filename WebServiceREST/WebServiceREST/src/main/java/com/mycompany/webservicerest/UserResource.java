@@ -61,7 +61,8 @@ public class UserResource {
 
         Query query = em.createQuery(sql);
         List<User> cars = query.getResultList();
-        StartupConfig.clientSocket.SendMessage("Hola gente de youtube");
+        em.close();
+//        StartupConfig.clientSocket.SendMessage("Hola gente de youtube");
         Gson gson = new Gson();
         String s = gson.toJson(cars);
         return s;
@@ -74,9 +75,28 @@ public class UserResource {
      * @param content representation for the resource
      */
     @PUT
+    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public void putJson(String content) {
+    public String putJson(String body) {
+        Gson gson = new Gson();
+        User newUser = (User) gson.fromJson(body, User.class);
 
+        em = PersistenceUnitHelper.PERSISTENCE_UNIT_2.createEntityManager();
+        em.getTransaction().begin();
+        User u = em.find(User.class, newUser.getId());
+        if (newUser.getStatus() != null) {
+            u.setStatus(newUser.getStatus());
+        }
+        if (newUser.getUsername() != null) {
+            u.setUsername(newUser.getUsername());
+        }
+ 
+        em.merge(u);
+        em.flush();
+        em.getTransaction().commit();
+        em.close();
+        
+        return body;
     }
 
     @POST
@@ -93,23 +113,6 @@ public class UserResource {
         em.close();
 
         return body;
-    }
-
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    public String executeAtServerSide(String serverQuery) {
-        String response = "";
-        try {
-            Gson gson = new Gson();
-            ServerQuery inputObject = (ServerQuery) gson.fromJson(serverQuery, ServerQuery.class);
-            String databaseResponse = executeQueryAtDatabase(inputObject.getQuery());
-            inputObject.setResponse(databaseResponse);
-            response = gson.toJson(inputObject);
-
-        } catch (Exception ex) {
-
-        }
-        return response;
     }
 
     private String executeQueryAtDatabase(String query) {
