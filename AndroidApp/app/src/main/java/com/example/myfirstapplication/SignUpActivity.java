@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.myfirstapplication.auth.AuthenticationManager;
 import com.example.myfirstapplication.auth.AuthenticationManagerInterface;
+import com.example.myfirstapplication.model.User;
 
 public class SignUpActivity extends Activity implements AuthenticationManagerInterface {
 
@@ -28,7 +29,7 @@ public class SignUpActivity extends Activity implements AuthenticationManagerInt
     }
 
     @Override
-    public void authResult(boolean isSuccessful, String message) {
+    public void authResult(boolean isSuccessful, String message, User user) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 

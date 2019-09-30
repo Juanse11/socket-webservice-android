@@ -55,6 +55,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -76,7 +77,6 @@ public class MainActivity extends AppCompatActivity
     BroadcastManager broadcastManagerForSocketIO;
     BroadcastManager broadcastManagerForWebService;
     NetworkStateBroadcastManager networkStateBroadcastManager;
-    ArrayList<String> listOfMessages = new ArrayList<>();
     UsersListAdapter adapter;
     ArrayList<User> allUsers = new ArrayList<>();
     ArrayList<Position> usersPositions;
@@ -121,12 +121,7 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        String user = getIntent().getExtras().
-                getString("username");
-        Toast.makeText(
-                this,
-                "Welcome " + user, Toast.LENGTH_SHORT).
-                show();
+
         ((Button) findViewById(R.id.start_service_button)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -146,7 +141,7 @@ public class MainActivity extends AppCompatActivity
         initializeBroadcastManagerForWebService();
         initializeBroadcastManagerForSocketIO();
         initializeBroadcastManagerForNetworkState();
-        sendRequestWebService("", "GET", "users");
+        sendRequestWebService("", "GET", "users", WebServiceManagementService.GET_USERS);
 
         adapter = new UsersListAdapter(this, allUsers);
         ListView listView = (ListView) findViewById(R.id.messages_list_view);
@@ -187,13 +182,14 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void sendRequestWebService(String payload, String type, String resource) {
+    public void sendRequestWebService(String payload, String type, String resource, String action) {
         Intent intent = new Intent(this, WebServiceManagementService.class);
         intent.setAction(WebServiceManagementService.GET_REQUEST);
         intent.putExtra("BASE_URL", "http://192.168.0.15:61103/WebServiceREST/resources");
         intent.putExtra("METHOD_TYPE", type);
         intent.putExtra("PAYLOAD", payload);
         intent.putExtra("RESOURCE", resource);
+        intent.putExtra("ACTION", action);
         startService(intent);
     }
 
@@ -247,7 +243,7 @@ public class MainActivity extends AppCompatActivity
 //            e.printStackTrace();
 //        }
 //
-//        sendRequestWebService(locationToJson.toString(), "POST", "positions");
+//        sendRequestWebService(locationToJson.toString(), "POST", "positions", WebServiceManagementService.GET_USERS);
 
         if (serviceStarted)
             if (broadcastManagerForSocketIO != null) {
@@ -372,7 +368,6 @@ public class MainActivity extends AppCompatActivity
                             ((ListView)findViewById(R.id.messages_list_view)).setAdapter(adapter);
                             adapter.notifyDataSetChanged();
                         } else if (type.equals(SocketManagementService.USER_DISCONNECTED)) {
-                            Log.d("MainActivity","user disconnected");
                             findUserByID(message.getInt("id"), "Offline");
                             ((ListView)findViewById(R.id.messages_list_view)).setAdapter(adapter);
                             adapter.notifyDataSetChanged();

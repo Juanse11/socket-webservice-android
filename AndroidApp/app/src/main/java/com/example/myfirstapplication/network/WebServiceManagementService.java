@@ -33,6 +33,10 @@ public class WebServiceManagementService extends IntentService implements Broadc
     public static BroadcastManager broadcastManager;
     public static String WEB_SERVICE_CHANNEL = "com.example.myfirstapplication.WEB_SERVICE_CHANNEL";
     public static String GET_USERS = "GET_USERS";
+    public static String GET_MESSAGES= "GET_MESSAGES";
+    public static String GET_POSITIONS= "GET_POSTIONS";
+    public static String POST_USER= "POST_USER";
+    public static String POST_MESSAGE= "POST_MESSAGE";
     public static String CLIENT_TO_SERVER_MESSAGE = "CLIENT_TO_SERVER_MESSAGE";
 
 
@@ -61,8 +65,9 @@ public class WebServiceManagementService extends IntentService implements Broadc
                 String PAYLOAD = intent.getStringExtra("PAYLOAD");
                 String METHOD_TYPE = intent.getStringExtra("METHOD_TYPE");
                 String RESOURCE = intent.getStringExtra("RESOURCE");
+                String ACTION = intent.getStringExtra("ACTION");
                 initializeBroadcastManager();
-                CallWebServiceOperation(BASE_URL, PAYLOAD,  RESOURCE, METHOD_TYPE);
+                CallWebServiceOperation(BASE_URL, PAYLOAD,  RESOURCE, METHOD_TYPE, ACTION);
             }
 
         }
@@ -103,7 +108,8 @@ public class WebServiceManagementService extends IntentService implements Broadc
             final String webServiceURL,
             final String payload,
             final String resource,
-            final String methodType) {
+            final String methodType,
+            final String action) {
 
         try {
             URL url = new URL(webServiceURL + "/" + resource);
@@ -128,7 +134,7 @@ public class WebServiceManagementService extends IntentService implements Broadc
                 while ((charIn = in.read()) != -1) {
                     stringBuffer.append((char) charIn);
                 }
-                broadcastManager.sendBroadcast(GET_USERS, stringBuffer.toString());
+                broadcastManager.sendBroadcast(action, stringBuffer.toString());
             }
 
 

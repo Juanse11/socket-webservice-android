@@ -29,18 +29,18 @@ public class AuthenticationManager implements AuthenticationManagerInterface {
                     User userFound=appDatabase.UserDao().getUserByUserName(username);
                     if (userFound != null){
                         if (userFound.password.equals(password)){
-                            caller.authResult(true, "You are logged in succesfully");
+                            caller.authResult(true, "You are logged in succesfully", userFound);
                         }else{
-                            caller.authResult(false, "Error. Check your credentials and try again.");
+                            caller.authResult(false, "Error. Check your credentials and try again.", null);
                         }
                     } else{
-                        caller.authResult(false, "Error. The user doesn't exist.");
+                        caller.authResult(false, "Error. The user doesn't exist.", null);
                     }
                 }
             });
 
         }catch (Exception e){
-            caller.authResult(false, e.getMessage());
+            caller.authResult(false, e.getMessage(), null);
         }
     }
 
@@ -56,15 +56,15 @@ public class AuthenticationManager implements AuthenticationManagerInterface {
                     appDatabase.UserDao().insertAll(newUser);
                 }
             });
-            caller.authResult(true, "Succes. You have signed up correctly");
+            caller.authResult(true, "Succes. You have signed up correctly", newUser);
         }catch (Exception e){
-            caller.authResult(false, e.getMessage());
+            caller.authResult(false, e.getMessage(), null);
         }
 
     }
 
     @Override
-    public void authResult(boolean isSuccessful, String message) {
+    public void authResult(boolean isSuccessful, String message, User user) {
 
     }
 

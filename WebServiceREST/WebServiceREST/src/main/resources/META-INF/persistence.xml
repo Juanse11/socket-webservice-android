@@ -5,6 +5,7 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>com.server.objects.User</class>
     <class>com.server.objects.Position</class>
+    <class>com.server.objects.ChatMessage</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.driver" value="org.sqlite.JDBC"/>

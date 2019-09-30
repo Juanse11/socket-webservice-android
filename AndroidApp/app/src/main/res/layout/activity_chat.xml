@@ -25,7 +25,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Connect with server"
-        android:id="@+id/service_button"/>
+        android:id="@+id/service_button"
+        android:clickable="true"
+        android:onClick="onClick"/>
 
     <ListView
         android:id="@+id/messages_view"

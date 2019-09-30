@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import com.example.myfirstapplication.auth.AuthenticationManager;
 import com.example.myfirstapplication.auth.AuthenticationManagerInterface;
+import com.example.myfirstapplication.auth.LoggedInUserManager;
+import com.example.myfirstapplication.model.User;
 
 public class LoginActivity extends Activity implements AuthenticationManagerInterface {
 
@@ -33,18 +35,24 @@ public class LoginActivity extends Activity implements AuthenticationManagerInte
         String password = ((EditText) findViewById(R.id.login_password)).getText().toString();
         AuthenticationManager authManager = new AuthenticationManager(this, this);
         authManager.logInUser(username, password);
-        Intent intetToBecalled = new Intent(this, MainActivity.class);
-        startActivity(intetToBecalled);
+
     }
 
     @Override
-    public void authResult(boolean isSuccessful, final String message) {
+    public void authResult(boolean isSuccessful, final String message, User user) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
             }
         });
+        if (isSuccessful){
+            LoggedInUserManager.setUser(user);
+            Intent intetToBecalled = new Intent(this, MainActivity.class);
+            startActivity(intetToBecalled);
+        }else{
+
+        }
     }
 
     @Override

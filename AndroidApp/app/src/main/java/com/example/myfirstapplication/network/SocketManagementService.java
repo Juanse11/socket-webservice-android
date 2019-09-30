@@ -122,7 +122,6 @@ public class SocketManagementService extends IntentService implements ClientSock
 
             if(broadcastManager!=null){
                 JSONObject messageJSON = new JSONObject(message);
-                Log.d("SocketManagementService", messageJSON.get("message").toString());
                 if (messageJSON.get("action").toString().equals(USER_CONNECTED)){
                     broadcastManager.sendBroadcast( USER_CONNECTED, message);
                 }else if (messageJSON.get("action").toString().equals(USER_DISCONNECTED)){
