@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -22,39 +23,39 @@ import java.util.ArrayList;
 public class ChatActivity extends AppCompatActivity implements BroadcastManagerCallerInterface {
 
     BroadcastManager broadcastManagerForSocketIO;
-    boolean serviceStarted=false;
+    boolean serviceStarted = false;
     ArrayList<String> messagesList = new ArrayList<String>();
     ArrayAdapter<String> adapter;
 
-    public void initializeBroadcastManagerForSocketIO(){
-        broadcastManagerForSocketIO=new BroadcastManager(this,
+    public void initializeBroadcastManagerForSocketIO() {
+        broadcastManagerForSocketIO = new BroadcastManager(this,
                 SocketManagementService.
-                        SOCKET_SERVICE_CHANNEL,this);
+                        SOCKET_SERVICE_CHANNEL, this);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
-        ((Button)findViewById(R.id.service_button)).setOnClickListener(new View.OnClickListener() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((Button) findViewById(R.id.service_button)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), SocketManagementService.class);
-                intent.putExtra("SERVER_HOST",((EditText)findViewById(R.id.host_editText)).getText()+"");
-                intent.putExtra("SERVER_PORT",Integer.parseInt(((EditText)findViewById(R.id.port_editText)).getText()+""));
+                intent.putExtra("SERVER_HOST", ((EditText) findViewById(R.id.host_editText)).getText() + "");
+                intent.putExtra("SERVER_PORT", Integer.parseInt(((EditText) findViewById(R.id.port_editText)).getText() + ""));
                 intent.setAction(SocketManagementService.ACTION_CONNECT);
                 startService(intent);
                 serviceStarted = true;
             }
         });
         initializeBroadcastManagerForSocketIO();
-        adapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1,messagesList);
-        ((ImageButton)findViewById(R.id.buttonMessage)).setOnClickListener(new View.OnClickListener() {
+        adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, messagesList);
+        ((ImageButton) findViewById(R.id.buttonMessage)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final EditText ed = ((EditText)findViewById(R.id.message_editText));
-                String message = ((EditText)findViewById(R.id.message_editText)).getText().toString();
-                broadcastManagerForSocketIO.sendBroadcast(SocketManagementService.CLIENT_TO_SERVER_MESSAGE,message);
+                final EditText ed = ((EditText) findViewById(R.id.message_editText));
+                String message = ((EditText) findViewById(R.id.message_editText)).getText().toString();
+                broadcastManagerForSocketIO.sendBroadcast(SocketManagementService.CLIENT_TO_SERVER_MESSAGE, message);
                 ed.getText().clear();
             }
         });
@@ -65,9 +66,9 @@ public class ChatActivity extends AppCompatActivity implements BroadcastManagerC
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(type.equals(SocketManagementService.MESSAGE_SENT)){
+                if (type.equals(SocketManagementService.MESSAGE_SENT)) {
                     messagesList.add(message);
-                    ((ListView)findViewById(R.id.messages_view)).setAdapter(adapter);
+                    ((ListView) findViewById(R.id.messages_view)).setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                 }
 

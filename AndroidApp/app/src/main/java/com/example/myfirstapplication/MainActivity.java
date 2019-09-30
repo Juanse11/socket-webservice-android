@@ -9,13 +9,14 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-import com.example.myfirstapplication.adapter.UsersListAdapter;
+import com.example.myfirstapplication.database.DatabaseManager;
+import com.example.myfirstapplication.ui.adapter.UsersListAdapter;
 import com.example.myfirstapplication.broadcast.BroadcastManager;
 import com.example.myfirstapplication.broadcast.BroadcastManagerCallerInterface;
 import com.example.myfirstapplication.broadcast.NetworkStateBroadcastManager;
 import com.example.myfirstapplication.broadcast.NetworkStateBroadcastManagerCallerInterface;
 import com.example.myfirstapplication.database.AppDatabase;
-import com.example.myfirstapplication.dialog.LogoutDialogAlert;
+import com.example.myfirstapplication.ui.dialog.LogoutDialogAlert;
 import com.example.myfirstapplication.gps.GPSManager;
 import com.example.myfirstapplication.gps.GPSManagerCallerInterface;
 import com.example.myfirstapplication.model.Position;
@@ -47,7 +48,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.room.Room;
 
 import android.view.Menu;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -84,16 +84,6 @@ public class MainActivity extends AppCompatActivity
     AppDatabase appDatabase;
 
 
-    public void initializeDataBase() {
-        try {
-            appDatabase = Room.
-                    databaseBuilder(this, AppDatabase.class,
-                            "app-database").
-                    fallbackToDestructiveMigration().build();
-        } catch (Exception error) {
-            Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
 
     public void initializeGPSManager() {
         gpsManager = new GPSManager(this, this);
@@ -132,7 +122,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         String user = getIntent().getExtras().
-                getString("user_name");
+                getString("username");
         Toast.makeText(
                 this,
                 "Welcome " + user, Toast.LENGTH_SHORT).
@@ -150,7 +140,7 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-        initializeDataBase();
+        appDatabase = DatabaseManager.getInstance(this);
         initializeGPSManager();
         initializeOSM();
         initializeBroadcastManagerForWebService();
@@ -161,24 +151,6 @@ public class MainActivity extends AppCompatActivity
         adapter = new UsersListAdapter(this, allUsers);
         ListView listView = (ListView) findViewById(R.id.messages_list_view);
         listView.setAdapter(adapter);
-    }
-
-    public void createUser(String userName, String userEmail, String userPassword) {
-        final User user = new User();
-        user.username = userName;
-        user.email = userEmail;
-        user.password = userPassword;
-        try {
-            AsyncTask.execute(new Runnable() {
-                @Override
-                public void run() {
-                    appDatabase.UserDao().insertAll(user);
-                }
-            });
-
-        } catch (Exception error) {
-            Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show();
-        }
     }
 
 
@@ -225,33 +197,22 @@ public class MainActivity extends AppCompatActivity
         startService(intent);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            broadcastManagerForSocketIO.sendBroadcast(SocketManagementService.CLIENT_TO_SERVER_MESSAGE, "test");
 
         } else if (id == R.id.nav_chat) {
             Intent intent = new Intent(this, ChatActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.nav_slideshow) {
-            AsyncTask.execute(new Runnable() {
-                @Override
-                public void run() {
-                    int amount = appDatabase.UserDao().getAll().size();
-                }
-            });
 
         } else if (id == R.id.nav_logout) {
             LogoutDialogAlert dialog = new LogoutDialogAlert(this);
             dialog.show(getSupportFragmentManager(), "dialog");
-
         }
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

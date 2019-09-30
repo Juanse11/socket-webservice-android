@@ -21,11 +21,14 @@ public interface UserDao {
     @Query("select * from User  WHERE email = :emails")
     List<User> getUserbyEmail(String emails);
 
-    @Query("select * from User  WHERE username = :userName")
-    List<User> getUserbyUserName(String userName);
+    @Query("select * from User  WHERE username = :userName LIMIT 1")
+    User getUserByUserName(String userName);
 
     @Insert
     void insertAll(User... users);
+
+    @Insert
+    void insertUser(User user);
 
     @Delete
     void delete(User user);

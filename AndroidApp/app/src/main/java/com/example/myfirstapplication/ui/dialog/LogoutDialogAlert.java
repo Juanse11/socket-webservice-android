@@ -1,12 +1,10 @@
-package com.example.myfirstapplication.dialog;
+package com.example.myfirstapplication.ui.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.myfirstapplication.R;

@@ -15,7 +15,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ChatActivity"></activity>
+        <activity
+            android:name=".ChatActivity"
+            android:label="Chat"></activity>
+        <activity
+            android:name=".SignUpActivity"
+            android:label="Sign Up"></activity>
 
         <service
             android:name=".network.SocketManagementService"
